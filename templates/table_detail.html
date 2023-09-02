@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
+  </head>
+  <body>
+    
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+            <div class="full_page_table mt-3">
+                <div class="table-responsive">
+                  <div style="float: right;">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCase">
+                      +Add
+                    </button>
+                  </div>
+                    <table class="table table-bordered text-center">
+                      <thead>
+                        <tr>
+                            {% for column in columns %}
+                            <th scope="col">{{column}}</th>
+                            {% endfor %}
+                            <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                        {% for obj in data %}
+                        {{obj.personid}}
+                        <tr>
+                            {% for value in obj %}
+                            <td>{{value}}</td>
+                            {% endfor %}
+
+                            <td>
+                                <button class="border-0 bg-transparent" data-placement="top" data-bs-toggle="modal"
+                                onclick="open_edit_modal({{obj}}, '{{table_name}}')" data-bs-target="#update">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button class="border-0 bg-transparent" data-bs-placement="top" data-bs-toggle="modal"
+                                onclick="delete_table_data({{obj}}, '{{table_name}}')" data-bs-target="#deletion">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                                
+                            </td>
+                            </tr>
+                            {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function open_edit_modal(obj,table_name)
+      {
+        let i=0
+        while (i < obj.length) {
+          document.getElementById(i).value = obj[i];
+          i++;
+        }
+        document.getElementById("update_table_name").value = table_name;
+        document.getElementById("before_update").value = obj
+      }
+      function delete_table_data(d,table_name) 
+      {
+        document.getElementById('case_deletion_id').value = d;
+        document.getElementById('case_deletion_table_name').value = table_name;
+      }
+    </script>
+    
+    <div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <form class="action-buttons-fixed mb-0" id="add_account" method="post" action="{%url 'Update_entry'%}">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">UPDATION</h4>
+          </div>
+          <div class="modal-body">
+                {% csrf_token %}
+              Enter your data here.
+              <br>
+              {% for column in columns %}
+              <label for="fname">{{column}}:</label>
+              {% if column == "personid" %}
+              <input id="{{ forloop.counter0 }}" class="form-control form-control-modern" name="set{{column}}" readonly required/>
+              {% else %}
+              <input id="{{ forloop.counter0 }}" class="form-control form-control-modern" name="set{{column}}" required/>
+              {% endif %}
+              {% endfor %}  
+              <input type="hidden" id="update_table_name" class="form-control form-control-modern" name="entry_updation_table_name" required/>
+              <input type="hidden" id="before_update" class="form-control form-control-modern" name="old_entry" required/>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancle</button>
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+  
+    <div class="modal fade" id="deletion" role="dialog" aria-labelledby="deletionLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <form class="action-buttons-fixed mb-0" id="add_account" method="post" action="{%url 'Delete_entry'%}">
+          {% csrf_token %}
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete</h5>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+  
+              Are you sure you want to delete.
+              <input type="hidden" id="case_deletion_id" class="form-control form-control-modern" name="case_id" required/>
+              <input type="hidden" id="case_deletion_table_name" class="form-control form-control-modern" name="case_table_name" required/>
+  
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-bs-dismiss="modal">No</button>
+              <button type="submit" class="btn btn-primary">Yes</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.7.0.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+    
+
+<Script src="{% static 'js/custom.js' %}"></Script>
+  </body>
+</html>

@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+            <div class="full_page_table mt-3">
+                <div class="table-responsive">
+                  <div style="float: right;">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCase">
+                      +Add
+                    </button>
+                  </div>
+                    <table class="table table-bordered text-center">
+                      <thead>
+                        <tr>
+                          <!-- <th scope="col">Sr. No.</th> -->
+                          <th scope="col">Action</th>
+                          <th scope="col">Table Name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for data in tables %}
+                        <tr>
+
+                          <!-- <th scope="row">{{ data.counter }}</th> -->
+                          <td>{{data}}1</td>
+                          <td>
+                            <button class="border-0 bg-transparent me-2" data-placement="top" data-toggle="modal"
+                            onclick="openCaseDetailPage('{{data}}')">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="border-0 bg-transparent" data-bs-placement="top" data-bs-toggle="modal"
+                            onclick="setDeleteId('{{data}}')" data-bs-target="#deletion">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <script>
+                    function setDeleteId(id) 
+                    {
+                      document.getElementById('deleteIdInput').value = id;
+                    }
+                  </script>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="createCase" role="dialog" aria-labelledby="createCaseLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <form class="action-buttons-fixed mb-0" id="add_account" method="post" action="/">
+          {% csrf_token %}
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Case</h5>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+  
+              <div class="form-group row align-items-center py-0">
+                <label class="col-lg-5 col-xl-3 control-label text-lg-right mb-0">Name</label>
+                <div class="col-lg-7 col-xl-6">
+                  <input type="text" class="form-control form-control-modern" name="name" id="code-id" required
+                    value="" />
+                </div>
+              </div>
+  
+              <div class="form-group row py-0">
+                <label class="col-lg-5 col-xl-3 control-label text-lg-right mb-0">Description</label>
+                <div class="col-lg-7 col-xl-6">
+                  <input type="text" class="form-control form-control-modern" name="description" required value="" />
+                </div>
+              </div>
+ 
+              <div class="form-group row py-0">
+                <label class="col-lg-5 col-xl-3 control-label text-lg-right mb-0">Clone</label>
+                <div class="col-lg-7 col-xl-6">
+                  <input type="checkbox" name="is_clone" />
+                </div>
+              </div>
+
+              <div class="form-group row py-0">
+                <label class="col-lg-5 col-xl-3 control-label text-lg-right mb-0">CaseName</label>
+                <div class="col-lg-7 col-xl-6">
+                  <select name="case_id">
+                    <option value="0" selected="">----------</option>
+                    {% for data in cases %}
+                      <option value={{data.id}}>{{data.name}}</option>
+                    {% endfor %}
+                  </select>
+                  <!-- <input type="text" class="form-control form-control-modern" name="clone_case" value="" /> -->
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </div>
+        </form>
+  
+      </div>
+    </div>
+  
+    <div class="modal fade" id="deletion" role="dialog" aria-labelledby="deletionLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <form class="action-buttons-fixed mb-0" id="add_account" method="post" action="{% url 'Delete_table' %}">
+          {% csrf_token %}
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete</h5>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+  
+              Are you sure you want to delete.
+              <input type="hidden" id="deleteIdInput" class="form-control form-control-modern" name="Table_name" required
+                  />
+                    
+  
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+              <button type="submit" class="btn btn-primary">Yes</button>
+            </div>
+          </div>
+        </form>
+  
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.0.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+<Script src="{% static 'js/custom.js' %}"></Script>
+<Script src="{% static 'js/custom1.js' %}"></Script>
+  </body>
+</html>
